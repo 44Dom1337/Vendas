@@ -56,6 +56,7 @@ nav button{background:none;border:0;color:var(--mu);display:flex;flex-direction:
 .dl{background:var(--cd);border-radius:14px;padding:22px 22px 12px;max-width:340px;width:100%}.dl h3{margin:0 0 8px;font-size:20px}.dl p{margin:0 0 14px;color:var(--mu);font-size:17px}
 .dl .bt{display:flex;justify-content:flex-end;gap:8px}.dl button{background:none;border:0;font-size:16px;font-weight:700;text-transform:uppercase;padding:10px 12px;color:var(--mu)}.dl .k{color:var(--hc)}
 .pdf{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;border:2px solid var(--y);background:none;color:var(--tx);font-size:18px;font-weight:600;padding:18px;border-radius:14px;margin-top:20px}
+nav button{position:relative}.pd{position:absolute;top:2px;right:14px;width:10px;height:10px;border-radius:50%;background:var(--rd)}
 </style>
 </head>
 <body>
@@ -63,7 +64,7 @@ nav button{background:none;border:0;color:var(--mu);display:flex;flex-direction:
 <script>
 var $=function(i){return document.getElementById(i)},db={c:[],v:[],p:[],n:1};
 try{var S=JSON.parse(localStorage.getItem("cv2"));if(S&&S.c)db=S}catch(e){}
-var IX=null;function sv(){IX=null;try{localStorage.setItem("cv2",JSON.stringify(db))}catch(e){}}
+var IX=null,SY={},ST;function sv(){IX=null;try{localStorage.setItem("cv2",JSON.stringify(db))}catch(e){}SY.dirty=1;clearTimeout(ST);ST=setTimeout(function(){sync()},1500)}
 var rd=function(v){return Math.round(v*100)/100},R=function(v){return (v<0?"-":"")+"R$ "+Math.abs(v).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})},
 esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})},
 num=function(s){return parseFloat(String(s).replace(",","."))},D=function(s){var p=s.split("-");return p[2]+"/"+p[1]+"/"+p[0]},
@@ -89,7 +90,7 @@ function ic(n,s,w){return '<svg width="'+(s||28)+'" height="'+(s||28)+'" viewBox
 function b(n,a,s){return '<button '+a+'>'+ic(n,s||28)+'</button>'}
 function hd(t,r){return '<div class="hd">'+b("back",'data-g="back"',30)+'<h1>'+t+'</h1>'+(r||"")+'</div>'}
 function nav(t){var L=[["inicio","home",""],["clientes","users","Clientes"],["vendas","dollar","Vendas"],["conta","user","Conta"]];
-return '<nav>'+L.map(function(x){return '<button data-r="'+x[0]+'"'+(x[0]==t?' class="on"':'')+'>'+ic(x[1],30)+(x[0]==t&&x[2]?x[2]:x[0]==t?"Início":"")+'</button>'}).join("")+'</nav>'}
+return '<nav>'+L.map(function(x){return '<button data-r="'+x[0]+'"'+(x[0]==t?' class="on"':'')+'>'+ic(x[1],30)+(x[0]==t&&x[2]?x[2]:x[0]==t?"Início":"")+(x[0]=="conta"?'<i class="pd" style="display:none"></i>':'')+'</button>'}).join("")+'</nav>'}
 function fld(id,i,lb,val,ex,pre){return '<div class="cp" id="f'+id+'">'+ic(i,34,1.4)+'<div class="c">'+(lb?'<label for="'+id+'">'+lb+'</label>':'')+(pre?'<div class="pr"><span>R$</span>':'')+'<input id="'+id+'" value="'+esc(val||"")+'" '+ex+'>'+(pre?'</div>':'')+'</div></div>'}
 function ask(t,m,ok,fn,no){var o=document.createElement("div");o.className="ov";o.innerHTML='<div class="dl"><h3>'+t+'</h3><p>'+m+'</p><div class="bt"><button data-x>'+(no||"Cancelar")+'</button><button class="k" data-y>'+ok+'</button></div></div>';
 o.addEventListener("click",function(e){if(e.target===o||e.target.hasAttribute("data-x"))o.remove();else if(e.target.hasAttribute("data-y")){o.remove();fn()}});document.body.appendChild(o)}
@@ -117,14 +118,14 @@ vs.forEach(function(v){var o=d(v.d);o.v+=v.v;o.r+=rest(v)});db.p.forEach(functio
 var pe=rd(vs.reduce(function(s,v){return s+rest(v)},0)),ks=Object.keys(g).sort().reverse();
 return '<div class="hd" style="display:block;padding:22px 10px 40px"><h1 style="font-size:25px;margin:0 0 0 6px">Vendas</h1><div class="mes">'+b("l",'data-a="pm"',22)+'<span>'+MS[mm].toUpperCase()+" "+my+'</span>'+b("r",'data-a="nm"',22)+'</div></div><div class="sh" style="margin-top:-26px"><div class="sm" style="border-top:0"><div><small>Total</small><b class="rd">'+R(vs.reduce(function(s,v){return s+v.v},0))+'</b></div><div><small>Pendente</small><b class="'+(pe>0?"rd":"gr")+'">'+R(pe)+'</b></div></div>'+
 (ks.length?ks.map(function(k){var o=g[k];return '<div class="dia"><div class="t">'+tit(k)+'</div><div class="q"><div><small>Vendido</small><b>'+R(o.v)+'</b></div><div><small>Recebido</small><b class="gr">'+R(o.p)+'</b></div><div><small>Pendente</small><b class="'+(o.r>0?"rd":"gr")+'">'+R(o.r)+'</b></div></div></div>'}).join(""):'<div class="em">Nenhuma movimentação neste mês.</div>')+'</div>'+nav("vendas")},
-conta:function(){return '<div class="hd"><h1>Conta</h1></div><div class="sh" style="padding:16px 24px"><button class="pdf">'+ic("pdf",30,1.8)+'Exportar em PDF</button><button class="pdf" data-a="bk">'+ic("wal",30,1.8)+'Baixar backup</button><button class="pdf" data-a="rs">'+ic("plus",30,1.8)+'Restaurar backup</button><input type="file" id="rf" accept=".json,application/json" hidden><p style="color:var(--mu);font-size:15px;margin:22px 4px 0">Os dados ficam neste aparelho. Baixe um backup com frequência e guarde o arquivo no Google Drive.</p></div>'+nav("conta")}};
+conta:function(){return '<div class="hd"><h1>Conta</h1></div><div class="sh" style="padding:16px 24px"><div style="font-size:18px;font-weight:600">Sincronização com a planilha</div><p id="sst" style="color:var(--mu);font-size:15px;margin:6px 0 0">'+stx()+'</p>'+fld("su","tag","Endereço do app (termina em /exec)",CF.u||"",'type="text" autocomplete="off" autocapitalize="off"')+fld("sk","clip","Chave",CF.k||"",'type="text" autocomplete="off" autocapitalize="off"')+'<button class="pdf" data-a="sk" style="margin-top:14px">'+ic("ok",30,1.8)+'Salvar e sincronizar</button><button class="pdf" data-a="rp" style="margin-top:12px">'+ic("wal",30,1.8)+'Restaurar da planilha</button><button class="pdf" style="margin-top:12px">'+ic("pdf",30,1.8)+'Exportar em PDF</button><button class="pdf" data-a="bk">'+ic("wal",30,1.8)+'Baixar backup</button><button class="pdf" data-a="rs">'+ic("plus",30,1.8)+'Restaurar backup</button><input type="file" id="rf" accept=".json,application/json" hidden><p style="color:var(--mu);font-size:15px;margin:22px 4px 0">Os dados ficam neste aparelho. Baixe um backup com frequência e guarde o arquivo no Google Drive.</p><p style="color:var(--mu);font-size:13px;margin:14px 4px 0">Versão 2</p></div>'+nav("conta")}};
 function lc(){var t=q.toLowerCase(),n=function(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()},L=db.c.filter(function(c){return n(c.n).indexOf(n(t))>-1}).sort(function(a,b){return a.n.localeCompare(b.n,"pt-BR")});
 $("lc").innerHTML=L.length?L.map(function(c){var p=pend(c);return '<div class="it" data-g="cliente-'+c.id+'"><div class="av" style="width:62px;height:62px;margin:12px 0">'+ic("av",40)+'</div><div class="in"><div class="nm">'+esc(c.n)+'</div><div class="vl '+(p>0?"rd":"gr")+'">'+R(p)+'</div></div></div>'}).join(""):'<div class="em">Nenhum cliente encontrado.</div>';
 $("tp").textContent=R(rd(db.c.reduce(function(s,c){return s+pend(c)},0)))}
 function render(){var h=(location.hash||"#inicio").slice(1).split("-"),pg=h[0],a=h[1],bv=h[2],ok=V[pg]&&(!{cliente:1,clienteedit:1}[pg]||cl(a))&&(pg!="vendadet"&&pg!="vendaedit"&&pg!="pagamentos"||vv(a))&&(pg!="vendanova"&&pg!="pagnova"||cl(a));
 if(!ok){location.replace("#inicio");return}
 var cor={vendanova:"#f03338",vendaedit:"#f03338",pagnova:"#1fae5c",pagamentos:"#1fae5c"}[pg]||"#fdc521";document.documentElement.style.setProperty("--hc",cor);
-$("app").innerHTML=V[pg](a,bv);if(pg=="clientes")lc();window.scrollTo(0,0)}
+$("app").innerHTML=V[pg](a,bv);if(pg=="clientes")lc();window.scrollTo(0,0);upd()}
 var A={
 so:function(){$("hh").classList.add("on");$("q").focus()},sc:function(){$("hh").classList.remove("on");q="";$("q").value="";lc()},
 pm:function(){mm--;if(mm<0){mm=11;my--}render()},nm:function(){mm++;if(mm>11){mm=0;my++}render()},
@@ -149,6 +150,30 @@ var t=e.target.closest("[data-g],[data-a],[data-r]");if(!t)return;if(t.dataset.a
 document.addEventListener("input",function(e){var t=e.target,w=t.closest(".cp");if(w)w.classList.remove("err");
 if(t.id=="q"){q=t.value;lc()}else if(t.id=="val"){var v=t.value.replace(/\./g,",").replace(/[^0-9,]/g,""),i=v.indexOf(",");if(i>-1)v=v.slice(0,i+1)+v.slice(i+1).replace(/,/g,"").slice(0,2);t.value=v}
 else if(t.id=="cel"){var d=t.value.replace(/\D/g,"").slice(0,11),r=d,k=d.length>10?7:6;if(d.length>6)r="("+d.slice(0,2)+") "+d.slice(2,k)+"-"+d.slice(k);else if(d.length>2)r="("+d.slice(0,2)+") "+d.slice(2);else if(d.length)r="("+d;t.value=r}});
+
+// ---- sincronização com a planilha Google (o celular manda; a planilha é a cópia de segurança) ----
+var CF={},BS={c:{},v:{},p:{}};
+try{CF=JSON.parse(localStorage.getItem("cvcfg"))||{}}catch(e){}
+try{BS=JSON.parse(localStorage.getItem("cvbase"))||BS}catch(e){}
+function sb(){try{localStorage.setItem("cvbase",JSON.stringify(BS))}catch(e){}}
+// compara os dados do aparelho com o que a planilha já confirmou; o que for diferente está "na fila"
+function dif(){var ops=[],T={c:db.c,v:db.v,p:db.p};["c","v","p"].forEach(function(t){var cur={},b=BS[t]||(BS[t]={});T[t].forEach(function(r){var s=JSON.stringify(r);cur[r.id]=1;if(b[r.id]!==s)ops.push({o:"p",t:t,r:r,s:s})});for(var i in b)if(!cur[i])ops.push({o:"d",t:t,i:+i})});return ops}
+function stx(){if(!CF.u)return"Sincronização não configurada.";if(SY.err)return"Erro: "+SY.err+". Vou tentar de novo.";if(SY.dirty)return navigator.onLine?"Sincronizando...":"Sem internet: "+dif().length+" alteração(ões) guardada(s) no aparelho.";return"Tudo sincronizado"+(SY.t?" às "+new Date(SY.t).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"")+"."}
+function upd(){var e=$("sst");if(e)e.textContent=stx();var d=document.querySelector(".pd");if(d)d.style.display=(CF.u&&(SY.err||SY.dirty))?"block":"none"}
+function sync(){if(SY.busy||!CF.u||!CF.k){upd();return Promise.resolve()}var ops=dif();if(!ops.length){SY.dirty=0;SY.err="";upd();return Promise.resolve()}
+if(!navigator.onLine){SY.dirty=1;upd();return Promise.resolve()}
+SY.busy=1;var ch=ops.slice(0,400);upd();
+return fetch(CF.u,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({k:CF.k,ops:ch.map(function(o){return {o:o.o,t:o.t,r:o.r,i:o.i}})})}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw j.erro||"erro";
+ch.forEach(function(o){if(o.o=="p")BS[o.t][o.r.id]=o.s;else delete BS[o.t][o.i]});sb();SY.busy=0;SY.err="";
+if(ops.length>ch.length)return sync();SY.t=Date.now();SY.dirty=dif().length>0;upd();if(SY.dirty){clearTimeout(ST);ST=setTimeout(function(){sync()},1500)}
+}).catch(function(e){SY.busy=0;SY.err=typeof e=="string"?e:"sem conexão com a planilha";upd()})}
+A.sk=function(){var u=$("su").value.trim(),k=$("sk").value.trim();if(!/^https:\/\/script\.google\.com\/.+\/exec$/.test(u))return err("su");if(!k)return err("sk");CF={u:u,k:k};try{localStorage.setItem("cvcfg",JSON.stringify(CF))}catch(e){}SY.err="";SY.dirty=1;sync()};
+A.rp=function(){if(!CF.u)return err("su");ask("Restaurar da planilha","Isso substitui os dados deste aparelho pelos que estão na planilha. Continuar?","Restaurar",function(){
+fetch(CF.u+"?k="+encodeURIComponent(CF.k)).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw j.erro||"erro";var m=0;["c","v","p"].forEach(function(t){j[t].forEach(function(r){if(r.id>m)m=r.id})});
+db={c:j.c,v:j.v,p:j.p,n:m+1};BS={c:{},v:{},p:{}};["c","v","p"].forEach(function(t){db[t].forEach(function(r){BS[t][r.id]=JSON.stringify(r)})});sb();IX=null;try{localStorage.setItem("cv2",JSON.stringify(db))}catch(e){}SY.dirty=0;SY.err="";render();ask("Pronto","Dados restaurados da planilha.","OK",function(){})
+}).catch(function(e){ask("Não foi possível restaurar",typeof e=="string"?e:"Sem conexão com a planilha.","OK",function(){})})})};
+SY.dirty=!!CF.u&&dif().length>0;setInterval(sync,60000);window.addEventListener("online",function(){sync()});
+if(CF.u)sync();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 window.addEventListener("hashchange",render);render();
