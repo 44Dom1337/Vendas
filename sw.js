@@ -1,4 +1,4 @@
-var C="vendas-v6",F=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png"];
+var C="vendas-v7",F=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png"];
 self.addEventListener("install",function(e){e.waitUntil(caches.open(C).then(function(c){return c.addAll(F)}).then(function(){return self.skipWaiting()}))});
 self.addEventListener("activate",function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(n){return n!==C}).map(function(n){return caches.delete(n)}))}).then(function(){return self.clients.claim()}))});
 // abre sempre do aparelho (rápido e offline) e atualiza a cópia em segundo plano quando há internet
